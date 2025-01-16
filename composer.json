@@ -1,0 +1,10 @@
+{
+    "name": "shipay/wc-shipay-payment",
+    "description": "Shipay Payment",
+    "autoload": {
+        "psr-4": {
+            "Shipay\\WcShipayPayment\\": "src/"
+        }
+    },
+    "require": {}
+}
