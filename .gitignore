@@ -23,3 +23,10 @@
 /app/Config/core.php
 /app/Config/database.php
 /vendors/*
+
+# Pyre type checker
+.pyre/
+.DS_Store
+
+.vscode
+build.sh
