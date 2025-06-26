@@ -1,12 +1,12 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Utils;
+namespace Shipay\Payment\Utils;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 
-use Shipay\WcShipayPayment\Utils\ProcessShipayOrder;
+use Shipay\Payment\Utils\ProcessShipayOrder;
 
 class Sources
 {
@@ -18,7 +18,7 @@ class Sources
     {
         return [
             self::SANDBOX_ENVIRONMENT => 'Sandbox',
-            self::PRODUCTION_ENVIRONMENT => __('Production', 'wc-shipay-payment')
+            self::PRODUCTION_ENVIRONMENT => __('Production', 'pix-e-bolepix-por-shipay')
         ];
     }
 
@@ -27,19 +27,19 @@ class Sources
         switch ($status) {
             case ProcessShipayOrder::SHIPAY_ORDER_PENDING:
             case ProcessShipayOrder::SHIPAY_ORDER_PENDINGV:
-                return __('Pendente (pending) - Pedido aberto e ainda não pago', 'wc-shipay-payment');
+                return __('Pendente (pending) - Pedido aberto e ainda não pago', 'pix-e-bolepix-por-shipay');
             case ProcessShipayOrder::SHIPAY_ORDER_APPROVED:
-                return __('Aprovado (approved) - Pedido aprovado na carteira digital', 'wc-shipay-payment');
+                return __('Aprovado (approved) - Pedido aprovado na carteira digital', 'pix-e-bolepix-por-shipay');
             case ProcessShipayOrder::SHIPAY_ORDER_CANCELLED:
-                return __('Cancelado (cancelled) - Pedido (ainda não pago) cancelado na carteira digital', 'wc-shipay-payment');
+                return __('Cancelado (cancelled) - Pedido (ainda não pago) cancelado na carteira digital', 'pix-e-bolepix-por-shipay');
             case ProcessShipayOrder::SHIPAY_ORDER_EXPIRED:
-                return __('Expirado (expired) - Pedido expirado após o esgotamento do prazo de expiração', 'wc-shipay-payment');
+                return __('Expirado (expired) - Pedido expirado após o esgotamento do prazo de expiração', 'pix-e-bolepix-por-shipay');
             case ProcessShipayOrder::SHIPAY_ORDER_REFUNDED:
-                return __('Estornado (refunded) - Pagamento devolvido ao comprador', 'wc-shipay-payment');
+                return __('Estornado (refunded) - Pagamento devolvido ao comprador', 'pix-e-bolepix-por-shipay');
             case ProcessShipayOrder::SHIPAY_ORDER_PARTIAL_REFUNDED:
-                return __('Estornado (partial_refunded) - Pagamento parcialmente devolvido ao comprador', 'wc-shipay-payment');
+                return __('Estornado (partial_refunded) - Pagamento parcialmente devolvido ao comprador', 'pix-e-bolepix-por-shipay');
             case ProcessShipayOrder::SHIPAY_ORDER_REFUND_PENDING:
-                return __('Estorno Pendente (refund_pending) - Pagamento aguardando devolução ao comprador', 'wc-shipay-payment');
+                return __('Estorno Pendente (refund_pending) - Pagamento aguardando devolução ao comprador', 'pix-e-bolepix-por-shipay');
 
             default:
                 return $status;

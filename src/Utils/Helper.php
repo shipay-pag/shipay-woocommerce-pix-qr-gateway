@@ -1,6 +1,6 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Utils;
+namespace Shipay\Payment\Utils;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;

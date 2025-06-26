@@ -1,9 +1,9 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Gateway\Client;
+namespace Shipay\Payment\Gateway\Client;
 
-use Shipay\WcShipayPayment\Utils\Sources;
-use Shipay\WcShipayPayment\Utils\Endpoints;
+use Shipay\Payment\Utils\Sources;
+use Shipay\Payment\Utils\Endpoints;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;

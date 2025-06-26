@@ -1,9 +1,9 @@
 {
-    "name": "shipay/wc-shipay-payment",
+    "name": "shipay/pix-e-bolepix-por-shipay",
     "description": "Shipay Payment",
     "autoload": {
         "psr-4": {
-            "Shipay\\WcShipayPayment\\": "src/"
+            "Shipay\\Payment\\": "src/"
         }
     },
     "require": {}

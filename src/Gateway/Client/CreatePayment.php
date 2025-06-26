@@ -1,9 +1,9 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Gateway\Client;
+namespace Shipay\Payment\Gateway\Client;
 
-use Shipay\WcShipayPayment\Utils\Endpoints;
-use Shipay\WcShipayPayment\Utils\Sources;
+use Shipay\Payment\Utils\Endpoints;
+use Shipay\Payment\Utils\Sources;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -44,13 +44,13 @@ class CreatePayment extends Api
 
         if ( $this->gateway->is_debug() ) {
             $this->gateway->log->add( $this->gateway->id, "Shipay - Payment Creation Body:" );
-            $this->gateway->log->add( $this->gateway->id, sprintf( "Body: %s", print_r( $body, true ) ) );
+            $this->gateway->log->add( $this->gateway->id, sprintf( "Body: %s", wp_json_encode( $body ) ) );
         }
 
         $token = $this->get_access_token();
         $header = $this->getDefaultPaymentHeader( $token );
 
-        $endpoint = $this->endpoints->get_order_creation_endpoint( $this->gateway->id, isset($body['expiration']));
+        $endpoint = $this->endpoints->get_order_creation_endpoint( $this->gateway->id, isset($body['expiration']) );
 
         $response = $this->do_request(
             $endpoint,
@@ -72,7 +72,7 @@ class CreatePayment extends Api
             if ( isset($response['body']) ) {
                 $this->gateway->log->add( $this->gateway->id, sprintf( "Body: %s",  $response['body'] ) );
             } else {
-                $this->gateway->log->add( $this->gateway->id, sprintf( "Body: %s", print_r( $response, true ) ) );
+                $this->gateway->log->add( $this->gateway->id, sprintf( "Body: %s", wp_json_encode( $response ) ) );
             }
         }
 

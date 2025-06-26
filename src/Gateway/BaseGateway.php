@@ -1,16 +1,16 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Gateway;
+namespace Shipay\Payment\Gateway;
 
 use Exception;
-use Shipay\WcShipayPayment\Gateway\Client\CancelPix;
-use Shipay\WcShipayPayment\Gateway\Client\ConsultStatus;
-use Shipay\WcShipayPayment\Utils\Helper as WP;
-use Shipay\WcShipayPayment\Gateway\Client\Wallets;
-use Shipay\WcShipayPayment\Utils\ProcessShipayOrder;
-use Shipay\WcShipayPayment\Utils\Sources;
-use Shipay\WcShipayPayment\Gateway\Methods\ShipayPixGatewayBlocksSupport;
-use Shipay\WcShipayPayment\Gateway\Methods\ShipayBolepixGatewayBlocksSupport;
+use Shipay\Payment\Gateway\Client\CancelPix;
+use Shipay\Payment\Gateway\Client\ConsultStatus;
+use Shipay\Payment\Utils\Helper as WP;
+use Shipay\Payment\Gateway\Client\Wallets;
+use Shipay\Payment\Utils\ProcessShipayOrder;
+use Shipay\Payment\Utils\Sources;
+use Shipay\Payment\Gateway\Methods\ShipayPixGatewayBlocksSupport;
+use Shipay\Payment\Gateway\Methods\ShipayBolepixGatewayBlocksSupport;
 
 if ( !defined('ABSPATH') ) {
     exit;
@@ -24,7 +24,7 @@ class BaseGateway {
 
         WP::add_filter( 'woocommerce_payment_gateways', $base, 'add_gateway' );
         WP::add_filter( 'woocommerce_blocks_loaded', $base, 'add_gateway_block_support' );
-        WP::add_filter( 'plugin_action_links_' . \WC_SHIPAY_PAYMENT_BASE_NAME, $base, 'plugin_action_links' );
+        WP::add_filter( 'plugin_action_links_' . \SHIPAY_PAYMENT_BASE_NAME, $base, 'plugin_action_links' );
         WP::add_action( 'wp_ajax_wc_shipay_payment_check', $base, 'check_payment' );
         WP::add_action( 'wp_ajax_nopriv_wc_shipay_payment_check', $base, 'check_payment' );
         WP::add_action( 'wp_ajax_wc_shipay_payment_wallets', $base, 'get_available_wallets' );
@@ -43,14 +43,22 @@ class BaseGateway {
     }
 
     public function check_payment() {
-        $order = wc_get_order(  $_GET[ 'order_id' ] );
+        if (
+            !isset($_GET['_ajax_nonce'])
+            || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_ajax_nonce'] ) ), 'shipay_check_payment_nonce')
+        ) {
+            wp_die( esc_html__('Nonce verification failed', 'pix-e-bolepix-por-shipay'), '', ['response' => 403]);
+        }
+
+        $order_id = isset( $_GET['order_id'] ) ? sanitize_text_field( $_GET['order_id'] ) : '';
+        $order = wc_get_order(  $order_id );
 
         if ( $order ) {
             wp_send_json( [ 'status' => $order->get_meta( '_wc_shipay_payment_status' ) ] );
             die();
         }
 
-        wp_die( esc_html__( 'Pedido não existe', 'wc-shipay-payment' ), '', [ 'response' => 401 ] );
+        wp_die( esc_html__( 'Pedido não existe', 'pix-e-bolepix-por-shipay' ), '', [ 'response' => 401 ] );
     }
 
     public function payment_status_scheduled() {
@@ -110,7 +118,7 @@ class BaseGateway {
          	return;
          }
 
-        require_once \WC_SHIPAY_PAYMENT_PLUGIN_PATH . '/src/Gateway/Methods/ShipayPixGatewayBlocksSupport.php';
+        require_once \SHIPAY_PAYMENT_PLUGIN_PATH . '/src/Gateway/Methods/ShipayPixGatewayBlocksSupport.php';
         add_action(
             'woocommerce_blocks_payment_method_type_registration',
             function( \Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
@@ -118,7 +126,7 @@ class BaseGateway {
             }
         );
 
-        require_once \WC_SHIPAY_PAYMENT_PLUGIN_PATH . '/src/Gateway/Methods/ShipayBolepixGatewayBlocksSupport.php';
+        require_once \SHIPAY_PAYMENT_PLUGIN_PATH . '/src/Gateway/Methods/ShipayBolepixGatewayBlocksSupport.php';
         add_action(
             'woocommerce_blocks_payment_method_type_registration',
             function( \Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
@@ -146,18 +154,19 @@ class BaseGateway {
         }
 
         wp_enqueue_script(
-            \WC_SHIPAY_PAYMENT_PLUGIN_NAME . '-settings',
-            \WC_SHIPAY_PAYMENT_PLUGIN_URL . 'assets/js/admin/wallet_setting.js',
+            \SHIPAY_PAYMENT_PLUGIN_NAME . '-settings',
+            \SHIPAY_PAYMENT_PLUGIN_URL . 'assets/js/admin/wallet_setting.js',
             [ 'jquery' ],
-            \WC_SHIPAY_PAYMENT_PLUGIN_VERSION
+            \SHIPAY_PAYMENT_PLUGIN_VERSION
         );
 
         wp_localize_script(
-            \WC_SHIPAY_PAYMENT_PLUGIN_NAME . '-settings',
+            \SHIPAY_PAYMENT_PLUGIN_NAME . '-settings',
             'wc_shipay_payment_api',
             [
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'security' => wp_create_nonce('wc_shipay_payment')
+                'security' => wp_create_nonce('wc_shipay_payment'),
+                'shipay_consult_wallet_nonce' => wp_create_nonce('shipay_consult_wallet_nonce')
             ]
         );
     }
@@ -172,24 +181,32 @@ class BaseGateway {
         }
 
         wp_enqueue_script(
-            \WC_SHIPAY_PAYMENT_PLUGIN_NAME . '-order-view',
-            \WC_SHIPAY_PAYMENT_PLUGIN_URL . 'assets/js/admin/order.js',
+            \SHIPAY_PAYMENT_PLUGIN_NAME . '-order-view',
+            \SHIPAY_PAYMENT_PLUGIN_URL . 'assets/js/admin/order.js',
             [ 'jquery' ],
-            \WC_SHIPAY_PAYMENT_PLUGIN_VERSION
+            \SHIPAY_PAYMENT_PLUGIN_VERSION
         );
 
         wp_localize_script(
-            \WC_SHIPAY_PAYMENT_PLUGIN_NAME . '-order-view',
+            \SHIPAY_PAYMENT_PLUGIN_NAME . '-order-view',
             'wc_shipay_payment_api',
             [
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'security' => wp_create_nonce('wc_shipay_payment')
+                'security' => wp_create_nonce('wc_shipay_payment'),
+                'shipay_cancel_order_nonce' => wp_create_nonce('shipay_cancel_order_nonce')
             ]
         );
     }
 
     public function get_available_wallets()
     {
+        if (
+            !isset( $_POST['_ajax_nonce'] )
+            || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_ajax_nonce'] ) ), 'shipay_consult_wallet_nonce')
+        ) {
+            wp_die( esc_html__('Erro de validação.', 'pix-e-bolepix-por-shipay'), '', ['response' => 403]);
+        }
+
         if (
             isset($_POST['access_key'])
             && isset($_POST['secret_key'])
@@ -210,11 +227,11 @@ class BaseGateway {
                 );
             } else {
                 wp_send_json_error(
-                    ['message' => __('Erro ao tentar retornar carteiras disponíveis na API Shipay', 'wc-shipay-payment' )]);
+                    ['message' => __('Erro ao tentar retornar carteiras disponíveis na API Shipay', 'pix-e-bolepix-por-shipay' )]);
             }
         } else {
             wp_send_json_error(
-                ['message' => __('É necessário preencher os campos de credenciais', 'wc-shipay-payment' )]);
+                ['message' => __('É necessário preencher os campos de credenciais', 'pix-e-bolepix-por-shipay' )]);
         }
 
         wp_die();
@@ -223,10 +240,17 @@ class BaseGateway {
     public function cancel_order_on_shipay()
     {
         if (
-            isset( $_POST[ 'shipay_order_id' ] )
-            && isset( $_POST[ 'order_id' ] )
+            !isset( $_POST['_ajax_nonce'] )
+            || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_ajax_nonce'] ) ), 'shipay_cancel_order_nonce')
         ) {
-            $order = wc_get_order($_POST['order_id']);
+            wp_die( esc_html__('Erro de validação.', 'pix-e-bolepix-por-shipay'), '', ['response' => 403]);
+        }
+
+        $order_id = isset($_POST['order_id']) ? sanitize_text_field($_POST['order_id']) : '';
+        $shipay_order_id = isset($_POST['shipay_order_id']) ? sanitize_text_field($_POST['shipay_order_id']) : '';
+
+        if ($order_id && $shipay_order_id && is_numeric($order_id)) {
+            $order = wc_get_order($order_id);
 
             $payment_method = $order->get_payment_method() == 'wc_shipay_pix_payment_geteway'
                 ? Methods\ShipayPixGateway::getInstance()
@@ -259,11 +283,11 @@ class BaseGateway {
                     );
                 } else {
                     wp_send_json_error(
-                        ['message' => __('Houve um erro ao cancelar o pedido. Consulte os logs para mais informações', 'wc-shipay-payment' )]);
+                        ['message' => __('Houve um erro ao cancelar o pedido. Consulte os logs para mais informações', 'pix-e-bolepix-por-shipay' )]);
                 }
             } else {
                 wp_send_json_error(
-                    ['message' => __('O pedido só pode ser cancelado caso ainda esteja com pagamento pendente.', 'wc-shipay-payment' )]);
+                    ['message' => __('O pedido só pode ser cancelado caso ainda esteja com pagamento pendente.', 'pix-e-bolepix-por-shipay' )]);
             }
         }
 
@@ -300,8 +324,8 @@ class BaseGateway {
 
         $pix = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_shipay_pix_payment_geteway' ) );
         $bolepix = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_shipay_bolepix_payment_geteway' ) );
-        $pluginLinks[] = sprintf( '<a href="%s">%s</a>', $pix, __( 'Configurações Pix', 'wc-shipay-payment'  ) );
-        $pluginLinks[] = sprintf( '<a href="%s">%s</a>', $bolepix, __( 'Configurações Bolepix', 'wc-shipay-payment' ) );
+        $pluginLinks[] = sprintf( '<a href="%s">%s</a>', $pix, __( 'Configurações Pix', 'pix-e-bolepix-por-shipay'  ) );
+        $pluginLinks[] = sprintf( '<a href="%s">%s</a>', $bolepix, __( 'Configurações Bolepix', 'pix-e-bolepix-por-shipay' ) );
 
         return array_merge( $pluginLinks, $links );
     }
@@ -319,8 +343,8 @@ class BaseGateway {
                     'shipay_payment_method' => $order->get_payment_method(),
                     'payment_manual_edit' => $order->get_meta( '_wc_shipay_payment_manual_edit' )
                 ],
-                WC()->template_path() . \WC_SHIPAY_PAYMENT_DIR_NAME . '/',
-                WC_SHIPAY_PAYMENT_PLUGIN_PATH . 'templates/'
+                WC()->template_path() . \SHIPAY_PAYMENT_DIR_NAME . '/',
+                SHIPAY_PAYMENT_PLUGIN_PATH . 'templates/'
             );
 
             echo wp_kses_post( $infos );
@@ -330,10 +354,10 @@ class BaseGateway {
     public function plugin_scripts()
     {
         wp_enqueue_script(
-            \WC_SHIPAY_PAYMENT_PLUGIN_NAME . '-payment',
-            \WC_SHIPAY_PAYMENT_PLUGIN_URL . 'assets/js/frontend/cpf_cnpj.js',
+            \SHIPAY_PAYMENT_PLUGIN_NAME . '-payment',
+            \SHIPAY_PAYMENT_PLUGIN_URL . 'assets/js/frontend/cpf_cnpj.js',
             ['jquery', 'jquery-mask'],
-            \WC_SHIPAY_PAYMENT_PLUGIN_VERSION,
+            \SHIPAY_PAYMENT_PLUGIN_VERSION,
             true
         );
     }
@@ -342,7 +366,7 @@ class BaseGateway {
         if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class) ) {
             \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
                 'custom_order_tables',
-                \WC_SHIPAY_PAYMENT_FILE_NAME,
+                \SHIPAY_PAYMENT_FILE_NAME,
                 true
             );
         }

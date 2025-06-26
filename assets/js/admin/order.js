@@ -15,7 +15,8 @@ jQuery(document).ready(function($) {
                 action: 'wc_shipay_cancel_order',
                 security: wc_shipay_payment_api.security,
                 shipay_order_id: shipay_order_id,
-                order_id: order_id
+                order_id: order_id,
+                _ajax_nonce: wc_shipay_payment_api.shipay_cancel_order_nonce
             },
             success: function(response) {
                 if (response.data.success) {

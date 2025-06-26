@@ -30,31 +30,3 @@ ob_start();
     </div>
 </div>
 
-<style>
-    .shipay-bolepix-container {
-        text-align: -webkit-center;
-    }
-
-    .shipay-bolepix-qr-code > input {
-        width: -webkit-fill-available;
-    }
-
-    .shipay-bolepix-barcode > input {
-        width: -webkit-fill-available;
-    }
-
-    .shipay-bolepix-pdf {
-        padding-bottom: 3rem;
-    }
-</style>
-
-<script>
-    function copy_shipay_bolepix() {
-        document.getElementById('shipay_bolepix_pix_copy_button').innerHTML = 'Copiado!';
-        navigator.clipboard.writeText(jQuery('#shipay_bolepix_code').val());
-        setTimeout(()=> {
-            document.getElementById('shipay_bolepix_pix_copy_button').innerHTML = 'Copiar Pix Copia e Cola';
-        },1000)
-    }
-</script>
-

@@ -1,9 +1,9 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Gateway\Client;
+namespace Shipay\Payment\Gateway\Client;
 
-use Shipay\WcShipayPayment\Utils\Endpoints;
-use Shipay\WcShipayPayment\Utils\Sources;
+use Shipay\Payment\Utils\Endpoints;
+use Shipay\Payment\Utils\Sources;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -66,7 +66,7 @@ class CancelPix extends Api
         if ( isset ($response['body']) ) {
             if ( $this->gateway->is_debug() ) {
                 $this->gateway->log->add( $this->gateway->id, "Shipay - Payment Cancel Response:" );
-                $this->gateway->log->add( $this->gateway->id, sprintf( "Body: %s", print_r( $response['body'], true ) ) );
+                $this->gateway->log->add( $this->gateway->id, sprintf( "Body: %s", wp_json_encode( $response['body'] ) ) );
             }
 
             return json_decode( $response['body'], true );

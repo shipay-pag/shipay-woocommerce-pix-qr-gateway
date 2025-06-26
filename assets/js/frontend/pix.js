@@ -50,7 +50,8 @@ jQuery(document).ready(function($) {
         var check_payment = setInterval(function () {
             $.get( woocommerce_params.ajax_url, {
                 'action': 'wc_shipay_payment_check',
-                'order_id': $('#shipay-current-order-id').val()
+                'order_id': $('#shipay-current-order-id').val(),
+                '_ajax_nonce': shipay_payment.shipay_check_payment_nonce
             }).done( function(data) {
                 if ( data.status == 'approved' ) {
                     clearInterval(check_payment);

@@ -32,6 +32,18 @@ const CustomInputField = ({ id, label,value,onChange }) => {
     );
 };
 
+const CustomHiddenInputField = ({ id, value }) => {
+    return React.createElement(
+        'input',
+        {
+            type: 'hidden',
+            id: id,
+            name: id,
+            value: value
+        }
+    );
+};
+
 const Content = ( props ) => {
     const { eventRegistration, emitResponse } = props;
     const { onPaymentProcessing } = eventRegistration;
@@ -44,6 +56,7 @@ const Content = ( props ) => {
     React.useEffect( () => {
         const unsubscribe = onPaymentProcessing( async () => {
             const myGatewayCustomData = jQuery('#shipay_pix_document').val();
+            const nonceData = jQuery('#shipay_pix_nonce').val();
             const customDataIsValid = !! myGatewayCustomData.length;
 
             if ( customDataIsValid ) {
@@ -52,6 +65,7 @@ const Content = ( props ) => {
                     meta: {
                         paymentMethodData: {
                             'shipay_pix_document': myGatewayCustomData,
+                            'shipay_pix_nonce': nonceData,
                         },
                     },
                 };
@@ -83,7 +97,15 @@ const Content = ( props ) => {
                 class: 'required',
                 onChange: handleDocumentChange
             }
-        )
+        ),
+        React.createElement(
+            CustomHiddenInputField,
+            {
+                id: 'shipay_pix_nonce',
+                value: shipay_data.shipay_pix_nonce
+            }
+        ),
+
     );
 };
 

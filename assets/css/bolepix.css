@@ -1,0 +1,15 @@
+.shipay-bolepix-container {
+    text-align: -webkit-center;
+}
+
+.shipay-bolepix-qr-code > input {
+    width: -webkit-fill-available;
+}
+
+.shipay-bolepix-barcode > input {
+    width: -webkit-fill-available;
+}
+
+.shipay-bolepix-pdf {
+    padding-bottom: 3rem;
+}
