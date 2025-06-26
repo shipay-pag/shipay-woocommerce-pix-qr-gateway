@@ -20,6 +20,7 @@ jQuery(document).ready(function($) {
                 access_key: $('[shipay-credential-access-key="true"]').val(),
                 secret_key: $('[shipay-credential-secret-key="true"]').val(),
                 client_id: $('[shipay-credential-client-id="true"]').val(),
+                _ajax_nonce: wc_shipay_payment_api.shipay_consult_wallet_nonce
             },
             success: function(response) {
                 $('[shipay-available-wallets="true"]').empty();

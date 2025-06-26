@@ -1,9 +1,9 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Gateway\Client;
+namespace Shipay\Payment\Gateway\Client;
 
-use Shipay\WcShipayPayment\Utils\Endpoints;
-use Shipay\WcShipayPayment\Utils\Sources;
+use Shipay\Payment\Utils\Endpoints;
+use Shipay\Payment\Utils\Sources;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -113,9 +113,13 @@ class Token extends Api
             $body
         );
 
-        if ($response['body']) {
+        if ( isset($response['body']) && $response['response']['code'] <= 203 ) {
             return json_decode($response['body'], true);
         }
+
+        $logs = new \WC_Logger();
+        $logs->add( 'shipay-token', 'ENVIRONMENT GET TOKEN: ' . $this->environment );
+        $logs->add( 'shipay-token', 'RESPONSE GET TOKEN: ' . json_encode($response) );
 
         return false;
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Utils;
+namespace Shipay\Payment\Utils;
 
-use Shipay\WcShipayPayment\Gateway\Client\ConsultStatus;
+use Shipay\Payment\Gateway\Client\ConsultStatus;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -108,31 +108,31 @@ class ProcessShipayOrder
         switch ( $shipay_status ) {
             case self::SHIPAY_ORDER_PENDING:
             case self::SHIPAY_ORDER_PENDINGV:
-                $order->update_status($this->gateway->new_order_status, __('Shipay: Aguardando Pagamento.', 'wc-shipay-payment'));
+                $order->update_status($this->gateway->new_order_status, __('Shipay: Aguardando Pagamento.', 'pix-e-bolepix-por-shipay'));
                 break;
                 
             case self::SHIPAY_ORDER_APPROVED:
                 if ( 'wc-' . $order->get_status() == $this->gateway->new_order_status ) {
-                    $order->update_status($this->gateway->after_paid_status, __('Shipay: Pagamento Aprovado.', 'wc-shipay-payment'));
+                    $order->update_status($this->gateway->after_paid_status, __('Shipay: Pagamento Aprovado.', 'pix-e-bolepix-por-shipay'));
                 }
 
                 break;
                 
             case self::SHIPAY_ORDER_PARTIAL_REFUNDED:
-                $order->add_order_note( __( 'Shipay: Pedido for estornado parcialmente', 'wc-shipay-payment' ) );
+                $order->add_order_note( __( 'Shipay: Pedido for estornado parcialmente', 'pix-e-bolepix-por-shipay' ) );
                 break;
                 
             case self::SHIPAY_ORDER_REFUND_PENDING:
-                $order->add_order_note( __( 'Shipay: O estorno esta pendente', 'wc-shipay-payment' ) );
+                $order->add_order_note( __( 'Shipay: O estorno esta pendente', 'pix-e-bolepix-por-shipay' ) );
                 break;
                 
             case self::SHIPAY_ORDER_CANCELLED:
             case self::SHIPAY_ORDER_EXPIRED:
-                $order->update_status($this->gateway->not_paid_status, __('Shipay: O pagamento não foi identificado e o pedido foi cancelado', 'wc-shipay-payment'));
+                $order->update_status($this->gateway->not_paid_status, __('Shipay: O pagamento não foi identificado e o pedido foi cancelado', 'pix-e-bolepix-por-shipay'));
                 break;
 
             case self::SHIPAY_ORDER_REFUNDED:
-                $order->update_status( 'wc-refunded', __('Shipay: O pedido foi reembolsado', 'wc-shipay-payment') );
+                $order->update_status( 'wc-refunded', __('Shipay: O pedido foi reembolsado', 'pix-e-bolepix-por-shipay') );
                 break;
 
             default:
@@ -148,7 +148,7 @@ class ProcessShipayOrder
 
         if ( $this->gateway->is_debug() ) {
             $this->gateway->log->add( $this->gateway->id, 'Retornou um POSTBACK' );
-            $this->gateway->log->add( $this->gateway->id, 'Response' . print_r( file_get_contents( 'php://input'), true ) );
+            $this->gateway->log->add( $this->gateway->id, 'Response' . file_get_contents( 'php://input') );
         }
 
         $posted = ! empty( file_get_contents( 'php://input') ) ? file_get_contents( 'php://input') : false;
@@ -159,7 +159,7 @@ class ProcessShipayOrder
             $this->process_webhook( json_decode( $posted, true ) );
             exit;
         } else {
-            wp_die( esc_html__( 'PIX Request Failure', 'wc-shipay-payment' ), '', array( 'response' => 401 ) );
+            wp_die( esc_html__( 'PIX Request Failure', 'pix-e-bolepix-por-shipay' ), '', array( 'response' => 401 ) );
         }
     }
 

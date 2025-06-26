@@ -1,14 +1,14 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Gateway\Methods;
+namespace Shipay\Payment\Gateway\Methods;
 
-use Shipay\WcShipayPayment\Gateway\Client\ConsultStatus;
-use Shipay\WcShipayPayment\Gateway\Client\CreatePayment;
-use Shipay\WcShipayPayment\Gateway\Client\RefundPix;
-use Shipay\WcShipayPayment\Gateway\Transactions\PixTransaction;
-use Shipay\WcShipayPayment\Utils\Helper;
-use Shipay\WcShipayPayment\Utils\Sources;
-use Shipay\WcShipayPayment\Utils\ProcessShipayOrder;
+use Shipay\Payment\Gateway\Client\ConsultStatus;
+use Shipay\Payment\Gateway\Client\CreatePayment;
+use Shipay\Payment\Gateway\Client\RefundPix;
+use Shipay\Payment\Gateway\Transactions\PixTransaction;
+use Shipay\Payment\Utils\Helper;
+use Shipay\Payment\Utils\Sources;
+use Shipay\Payment\Utils\ProcessShipayOrder;
 use WC_Payment_Gateway;
 use WC_Logger;
 
@@ -17,7 +17,7 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Pix GeteWay class
+ * Pix Gateway class
  */
 class ShipayPixGateway extends WC_Payment_Gateway
 {
@@ -180,16 +180,16 @@ class ShipayPixGateway extends WC_Payment_Gateway
 
         $this->form_fields = [
             'title' => [
-                'title' => __('Título', 'wc-shipay-payment'),
+                'title' => __('Título', 'pix-e-bolepix-por-shipay'),
                 'type' => 'text',
-                'description' => __('Title that must be displayed for customer', 'wc-shipay-payment'),
+                'description' => __('Title that must be displayed for customer', 'pix-e-bolepix-por-shipay'),
                 'default' => '',
                 'custom_attributes' => [
                     'required' => 'required',
                 ],
             ],
             'environment' => [
-                'title' => __('Ambiente', 'wc-shipay-payment'),
+                'title' => __('Ambiente', 'pix-e-bolepix-por-shipay'),
                 'type' => 'select',
                 'default' => '',
                 'options' => $this->shipay_utils_sources->environment_options(),
@@ -199,11 +199,11 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'access_key' => [
-                'title' => __('Access Key', 'wc-shipay-payment'),
+                'title' => __('Access Key', 'pix-e-bolepix-por-shipay'),
                 'type' => 'text',
                 'description' => sprintf(
                     'As etapas para obter as credenciais podem ser encontradas em %s.',
-                    '<a href="https://shipay.freshdesk.com/support/solutions/articles/154000126973-painel-shipay-chaves-de-integrac%C3%A3o-onde-extrair-">' . __('Obter credenciais de API', 'wc-shipay-payment') . '</a>'
+                    '<a href="https://shipay.freshdesk.com/support/solutions/articles/154000126973-painel-shipay-chaves-de-integrac%C3%A3o-onde-extrair-">' . __('Obter credenciais de API', 'pix-e-bolepix-por-shipay') . '</a>'
                 ),
                 'default' => '',
                 'custom_attributes' => [
@@ -213,7 +213,7 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'secret_key' => [
-                'title' => __('Secret Key', 'wc-shipay-payment'),
+                'title' => __('Secret Key', 'pix-e-bolepix-por-shipay'),
                 'type' => 'text',
                 'default' => '',
                 'custom_attributes' => [
@@ -223,7 +223,7 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'client_id' => [
-                'title' => __('Client ID', 'wc-shipay-payment'),
+                'title' => __('Client ID', 'pix-e-bolepix-por-shipay'),
                 'type' => 'text',
                 'default' => '',
                 'custom_attributes' => [
@@ -233,10 +233,10 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'wallet' => [
-                'title' => __('Wallet', 'wc-shipay-payment'),
+                'title' => __('Wallet', 'pix-e-bolepix-por-shipay'),
                 'type' => 'select',
                 'default' => '',
-                'description' => __('Preencha as credenciais para poder selecionar a carteira', 'wc-shipay-payment'),
+                'description' => __('Preencha as credenciais para poder selecionar a carteira', 'pix-e-bolepix-por-shipay'),
                 'options' => $_current_wallet_option,
                 'custom_attributes' => [
                     'required' => 'required',
@@ -244,7 +244,7 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'checkout_instructions' => [
-                'title' => __('Instruções de check-out', 'wc-shipay-payment'),
+                'title' => __('Instruções de check-out', 'pix-e-bolepix-por-shipay'),
                 'type' => 'text',
                 'default' => '',
                 'custom_attributes' => [
@@ -252,7 +252,7 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'order_received_instructions' => [
-                'title' => __('Instruções para Pedido Recebido', 'wc-shipay-payment'),
+                'title' => __('Instruções para Pedido Recebido', 'pix-e-bolepix-por-shipay'),
                 'type' => 'text',
                 'default' => '',
                 'custom_attributes' => [
@@ -260,18 +260,18 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'pix_expiration_seconds' => [
-                'title' => __('Segundos de Expiração do Pix', 'wc-shipay-payment'),
+                'title' => __('Segundos de Expiração do Pix', 'pix-e-bolepix-por-shipay'),
                 'type' => 'number',
-                'description' => __('Para pagamentos com tempo de expiração menor que 60 minutos será utilizado o pix instantâneo.', 'wc-shipay-payment'),
+                'description' => __('Para pagamentos com tempo de expiração menor que 60 minutos será utilizado o pix instantâneo.', 'pix-e-bolepix-por-shipay'),
                 'default' => '',
                 'custom_attributes' => [
                     'min' => 3600,
                 ]
             ],
             'new_order_status' => [
-                'title' => __('Status do Novo Pedido', 'wc-shipay-payment'),
+                'title' => __('Status do Novo Pedido', 'pix-e-bolepix-por-shipay'),
                 'type' => 'select',
-                'description' => __('Defina o status quando o pedido for criado.', 'wc-shipay-payment'),
+                'description' => __('Defina o status quando o pedido for criado.', 'pix-e-bolepix-por-shipay'),
                 'default' => '',
                 'options' => wc_get_order_statuses(),
                 'custom_attributes' => [
@@ -279,9 +279,9 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'after_paid_status' => [
-                'title' => __('Status do Pedido Após o Pagamento', 'wc-shipay-payment'),
+                'title' => __('Status do Pedido Após o Pagamento', 'pix-e-bolepix-por-shipay'),
                 'type' => 'select',
-                'description' => __('Defina o status do pedido após o pagamento.', 'wc-shipay-payment'),
+                'description' => __('Defina o status do pedido após o pagamento.', 'pix-e-bolepix-por-shipay'),
                 'default' => '',
                 'options' => wc_get_order_statuses(),
                 'custom_attributes' => [
@@ -289,9 +289,9 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
             'not_paid_status' => [
-                'title' => __('Status para Pedido não Pago', 'wc-shipay-payment'),
+                'title' => __('Status para Pedido não Pago', 'pix-e-bolepix-por-shipay'),
                 'type' => 'select',
-                'description' => __('Status para pedidos que não foram pagos e o pagamento expirou.', 'wc-shipay-payment'),
+                'description' => __('Status para pedidos que não foram pagos e o pagamento expirou.', 'pix-e-bolepix-por-shipay'),
                 'default' => '',
                 'options' => wc_get_order_statuses(),
                 'custom_attributes' => [
@@ -299,13 +299,13 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 ],
             ],
 //            'debug' => [
-//                'title' => __('Debug Log', 'wc-shipay-payment'),
+//                'title' => __('Debug Log', 'pix-e-bolepix-por-shipay'),
 //                'type' => 'checkbox',
-//                'label' => __('Ativar logs', 'wc-shipay-payment'),
+//                'label' => __('Ativar logs', 'pix-e-bolepix-por-shipay'),
 //                'default' => 'no',
 //                'description' => sprintf(
-//                    __('Verifique os logs em %s', 'wc-shipay-payment'),
-//                    '<a href="' . esc_url(admin_url('admin.php?page=wc-status&tab=logs&log_file=' . esc_attr($this->id) . '-' . sanitize_file_name(wp_hash($this->id)) . '.log')) . '">' . __('System Status &gt; Logs', 'wc-shipay-payment') . '</a>'
+//                    __('Verifique os logs em %s', 'pix-e-bolepix-por-shipay'),
+//                    '<a href="' . esc_url(admin_url('admin.php?page=wc-status&tab=logs&log_file=' . esc_attr($this->id) . '-' . sanitize_file_name(wp_hash($this->id)) . '.log')) . '">' . __('System Status &gt; Logs', 'pix-e-bolepix-por-shipay') . '</a>'
 //                ),
 //            ]
         ];
@@ -326,8 +326,8 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 'description' => $this->get_description(),
                 'checkout_instructions' => $this->checkout_instructions
             ],
-            WC()->template_path() . \WC_SHIPAY_PAYMENT_DIR_NAME . '/',
-            WC_SHIPAY_PAYMENT_PLUGIN_PATH . 'templates/'
+            WC()->template_path() . \SHIPAY_PAYMENT_DIR_NAME . '/',
+            SHIPAY_PAYMENT_PLUGIN_PATH . 'templates/'
         );
     }
 
@@ -347,9 +347,9 @@ class ShipayPixGateway extends WC_Payment_Gateway
         $this->client_id = $this->get_option('client_id');
         $this->wallet = $this->get_option('wallet');
         $this->checkout_instructions = $this->get_option('checkout_instructions',
-            __('O QRCode será exibido após você finalizar o pedido.', 'wc-shipay-payment'));
+            __('O QRCode será exibido após você finalizar o pedido.', 'pix-e-bolepix-por-shipay'));
         $this->order_received_intructions = $this->get_option('order_received_instructions',
-            __('Pague usando o QRCode ou a opção Copiar e Colar.', 'wc-shipay-payment'));
+            __('Pague usando o QRCode ou a opção Copiar e Colar.', 'pix-e-bolepix-por-shipay'));
         $this->pix_expiration_seconds = $this->get_option('pix_expiration_seconds');
         $this->new_order_status = $this->get_option('new_order_status', 'wc-pending');
         $this->after_paid_status = $this->get_option('after_paid_status', 'wc-processing');
@@ -379,15 +379,24 @@ class ShipayPixGateway extends WC_Payment_Gateway
     public function process_payment( $order_id )
     {
         try {
-            if (!isset($_POST['shipay_pix_document'])) {
-                throw new \Exception(__('It is necessary to fill the document field', 'wc-shipay-payment'));
+            if (
+                !isset( $_POST['shipay_pix_nonce'] )
+                || !wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['shipay_pix_nonce'] ) ), 'shipay_pix_nonce')
+            ) {
+                wp_die( esc_html__('Erro de validação ao tentar fazer o pedido.', 'pix-e-bolepix-por-shipay'), '', ['response' => 403]);
+            }
+
+            $shipay_pix_document = isset($_POST['shipay_pix_document']) ? sanitize_text_field($_POST['shipay_pix_document']) : '';
+
+            if (!$shipay_pix_document) {
+                throw new \Exception(__('It is necessary to fill the document field', 'pix-e-bolepix-por-shipay'));
             }
 
             $order = wc_get_order( $order_id );
             $pix_transaction = new PixTransaction(
                 $this,
                 $order,
-                $_POST['shipay_pix_document']
+                $shipay_pix_document
             );
 
             $pix_service = new CreatePayment($this);
@@ -396,7 +405,7 @@ class ShipayPixGateway extends WC_Payment_Gateway
             $response = $pix_service->create_payment($transaction_body);
 
             if (isset($response['code']) && $response['code'] > 203) {
-                throw new \Exception(__('Erro ao processar pagamento. Confira os dados inseridos.', 'wc-shipay-payment'));
+                throw new \Exception(__('Erro ao processar pagamento. Confira os dados inseridos.', 'pix-e-bolepix-por-shipay'));
             }
 
             $this->update_order_pix_info($order, $response);
@@ -427,15 +436,15 @@ class ShipayPixGateway extends WC_Payment_Gateway
                     $this->update_order_pix_info($order, $response);
                     $order->save();
                 } else {
-                    throw new \Exception(__('Erro ao tentar estornar o pedido na Shipay', 'wc-shipay-payment'), 1);
+                    throw new \Exception(__('Erro ao tentar estornar o pedido na Shipay', 'pix-e-bolepix-por-shipay'), 1);
                 }
             } else {
-                throw new \Exception(__('Pedido não encontrado', 'wc-shipay-payment'), 1);
+                throw new \Exception(__('Pedido não encontrado', 'pix-e-bolepix-por-shipay'), 1);
             }
 
             return [
                 'result' => 'success',
-                'message' => __('Pedido extornado com sucesso.', 'wc-shipay-payment')
+                'message' => __('Pedido extornado com sucesso.', 'pix-e-bolepix-por-shipay')
             ];
         } catch (\Error $e) {
             throw $e;
@@ -479,8 +488,8 @@ class ShipayPixGateway extends WC_Payment_Gateway
                 'payment_received_visibility' => $payment_received_visibility,
                 'status' => $order->get_meta('_wc_shipay_payment_status')
             ],
-            WC()->template_path() . \WC_SHIPAY_PAYMENT_DIR_NAME . '/',
-            WC_SHIPAY_PAYMENT_PLUGIN_PATH . 'templates/'
+            WC()->template_path() . \SHIPAY_PAYMENT_DIR_NAME . '/',
+            SHIPAY_PAYMENT_PLUGIN_PATH . 'templates/'
         );
     }
 
@@ -505,17 +514,25 @@ class ShipayPixGateway extends WC_Payment_Gateway
     public function pix_script()
     {
         wp_enqueue_script(
-            \WC_SHIPAY_PAYMENT_PLUGIN_NAME . 'pix-payment',
-            \WC_SHIPAY_PAYMENT_PLUGIN_URL . 'assets/js/frontend/pix.js',
+            \SHIPAY_PAYMENT_PLUGIN_NAME . 'pix-payment',
+            \SHIPAY_PAYMENT_PLUGIN_URL . 'assets/js/frontend/pix.js',
             ['jquery'],
-            \WC_SHIPAY_PAYMENT_PLUGIN_VERSION,
+            \SHIPAY_PAYMENT_PLUGIN_VERSION,
             true
         );
 
-        wp_localize_script(\WC_SHIPAY_PAYMENT_PLUGIN_NAME . 'pix-payment',
+        wp_localize_script(\SHIPAY_PAYMENT_PLUGIN_NAME . 'pix-payment',
             'shipay_payment', array(
                 'rest_url' => esc_url(rest_url('shipay/v1/order_status?order_id=')),
+                'shipay_check_payment_nonce' => wp_create_nonce('shipay_check_payment_nonce')
             ));
+
+        wp_enqueue_style(
+            \SHIPAY_PAYMENT_PLUGIN_NAME . 'pix-payment-style',
+            \SHIPAY_PAYMENT_PLUGIN_URL . 'assets/css/pix.css',
+            [],
+            \SHIPAY_PAYMENT_PLUGIN_VERSION
+        );
     }
 
     /**

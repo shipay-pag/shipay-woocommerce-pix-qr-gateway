@@ -1,0 +1,7 @@
+.shipay-pix-container {
+    text-align: -webkit-center;
+}
+
+.shipay-pix-qr-code > input {
+    width: -webkit-fill-available;
+}

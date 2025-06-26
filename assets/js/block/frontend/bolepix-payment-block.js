@@ -31,6 +31,22 @@ let BolepixDocumentInputField = ({ id, label,value,onChange }) => {
     );
 };
 
+let BolepixCustomHiddenInputField = ({ id, value }) => {
+    return React.createElement(
+        'div',
+        { className: 'wc-block-components-text-input' },
+        React.createElement(
+            'input',
+            {
+                type: 'hidden',
+                id: id,
+                name: id,
+                value: value
+            }
+        ),
+    );
+};
+
 let BolepixContent = ( props ) => {
     let { eventRegistration, emitResponse } = props;
     let { onPaymentProcessing } = eventRegistration;
@@ -43,6 +59,7 @@ let BolepixContent = ( props ) => {
     React.useEffect( () => {
         const unsubscribe = onPaymentProcessing( async () => {
             const myGatewayCustomData = jQuery('#shipay_bolepix_document').val();
+            const nonceData = jQuery('#shipay_bolepix_nonce').val();
             const customDataIsValid = !! myGatewayCustomData.length;
 
             if ( customDataIsValid ) {
@@ -51,6 +68,7 @@ let BolepixContent = ( props ) => {
                     meta: {
                         paymentMethodData: {
                             'shipay_bolepix_document': myGatewayCustomData,
+                            'shipay_bolepix_nonce': nonceData,
                         },
                     },
                 };
@@ -82,7 +100,14 @@ let BolepixContent = ( props ) => {
                 class: 'required',
                 onChange: handleDocumentChange
             }
-        )
+        ),
+        React.createElement(
+            BolepixCustomHiddenInputField,
+            {
+                id: 'shipay_bolepix_nonce',
+                value: bolepix_shipay_data.shipay_bolepix_nonce
+            }
+        ),
     );
 };
 

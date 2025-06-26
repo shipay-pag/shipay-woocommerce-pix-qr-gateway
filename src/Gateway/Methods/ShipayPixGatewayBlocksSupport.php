@@ -1,8 +1,8 @@
 <?php
-namespace Shipay\WcShipayPayment\Gateway\Methods;
+namespace Shipay\Payment\Gateway\Methods;
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
-use Shipay\WcShipayPayment\Gateway\Methods\ShipayPixGateway;
+use Shipay\Payment\Gateway\Methods\ShipayPixGateway;
 
 final class ShipayPixGatewayBlocksSupport extends AbstractPaymentMethodType {
 
@@ -44,7 +44,7 @@ final class ShipayPixGatewayBlocksSupport extends AbstractPaymentMethodType {
 	 */
 	public function get_payment_method_script_handles() {
 		$script_path = 'assets/js/block/frontend/pix-payment-block.js';
-		$script_url = \WC_SHIPAY_PAYMENT_PLUGIN_URL . $script_path;
+		$script_url = \SHIPAY_PAYMENT_PLUGIN_URL . $script_path;
 
 		wp_register_script(
 			'wc-shipay-pix-payment-blocks',
@@ -71,7 +71,8 @@ final class ShipayPixGatewayBlocksSupport extends AbstractPaymentMethodType {
 		return [ 
 			'title' => $this->get_setting( 'title' ),
 			'description' => esc_html( $this->get_setting( 'checkout_instructions' ) ),
-			'supports' => array_filter( $this->gateway->supports, [ $this->gateway, 'supports' ] )
+            'shipay_pix_nonce' => wp_create_nonce( 'shipay_pix_nonce' ),
+            'supports' => array_filter( $this->gateway->supports, [ $this->gateway, 'supports' ] )
 		];
 	}
 }
