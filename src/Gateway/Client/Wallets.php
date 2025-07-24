@@ -1,9 +1,9 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Gateway\Client;
+namespace Shipay\Payment\Gateway\Client;
 
-use Shipay\WcShipayPayment\Utils\Endpoints;
-use Shipay\WcShipayPayment\Utils\Sources;
+use Shipay\Payment\Utils\Endpoints;
+use Shipay\Payment\Utils\Sources;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -90,15 +90,16 @@ class Wallets extends Api
 
     public function get_available_wallets()
     {
+        $logs = new \WC_Logger();
+
         if ($this->environment == Sources::SANDBOX_ENVIRONMENT) {
             $this->set_base_url(Endpoints::SANDBOX_GATEWAY_URI);
         } else {
             $this->set_base_url(Endpoints::PRODUCTION_GATEWAY_URI);
         }
 
-
         $token = $this->get_access_token();
-        $header = $this->getDefaultPaymentHeader($token);
+        $header = $this->getDefaultPaymentHeader( $token );
 
         $response = $this->do_request(
             Endpoints::WALLETS_ENDPOINT,
@@ -107,10 +108,12 @@ class Wallets extends Api
             $header
         );
 
-        if ( isset ($response['body']) ) {
+        if ( isset ($response['body']) && $response['response']['code'] <= 203 ) {
             return json_decode( $response['body'], true);
         }
 
+        $logs->add( 'shipay-wallets', 'GET WALLET HEADERS: ' . json_encode($header));
+        $logs->add( 'shipay-wallets', 'WALLET RESPONSE: ' . json_encode($response) );
         return $response;
     }
 }

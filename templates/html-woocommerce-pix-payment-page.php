@@ -32,14 +32,3 @@ ob_start();
         <h2>Pagamento expirado.</h2>
     </div>
 </div>
-
-
-<style>
-    .shipay-pix-container {
-        text-align: -webkit-center;
-    }
-
-    .shipay-pix-qr-code > input {
-        width: -webkit-fill-available;
-    }
-</style>

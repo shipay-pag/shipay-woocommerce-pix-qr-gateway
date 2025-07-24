@@ -1,6 +1,6 @@
 === Pix e Bolepix por Shipay ===
 Tags: woocommerce, payment, pix, boleto, bolepix, shipay
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Requires at least: 5.4
 Requires PHP: 7.2
 WC requires at least: 5.0
@@ -73,3 +73,42 @@ O plugin utiliza webhook para garantir que o status dos pedidos seja atualizado 
 == Licença ==
 
 Este plugin é licenciado sob a Licença GPLv3.
+
+
+== Serviços Externos ==
+
+Este plugin se conecta ao gateway de pagamento Shipay para processar transações.
+
+**API Endpoints:**
+- Production: https://api.shipay.com.br
+- Sandbox: https://api-staging.shipay.com.br
+
+**Data Sent to Shipay:**
+- Dados do pedido
+- Dados do cliente
+
+**Objetivo:**
+Esses dados são enviados para facilitar o processamento de pagamentos via Shipay.
+
+**Política e Termos de Privacidade:**
+- Política de Privacidade da Shipay: https://www.shipay.com.br/politica-de-privacidade
+- Termos de Serviço da Shipay: https://www.shipay.com.br/termos-de-uso
+
+
+== External Services ==
+This plugin connects to the Shipay payment gateway to process transactions.
+
+**API Endpoints:**
+- Production: https://api.shipay.com.br
+- Sandbox: https://api-staging.shipay.com.br
+
+**Data Sent to Shipay:**
+- Order details
+- Customer data
+
+**Purpose:**
+This data is sent to facilitate payment processing via Shipay.
+
+**Privacy Policy & Terms:**
+- Shipay Privacy Policy: https://www.shipay.com.br/politica-de-privacidade
+- Shipay Terms of Service: https://www.shipay.com.br/termos-de-uso

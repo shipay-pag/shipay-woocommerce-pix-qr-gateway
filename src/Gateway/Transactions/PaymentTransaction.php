@@ -1,9 +1,9 @@
 <?php
 
-namespace Shipay\WcShipayPayment\Gateway\Transactions;
+namespace Shipay\Payment\Gateway\Transactions;
 
-use Shipay\WcShipayPayment\Utils\Sources;
-use Shipay\WcShipayPayment\Utils\Endpoints;
+use Shipay\Payment\Utils\Sources;
+use Shipay\Payment\Utils\Endpoints;
 
 if ( !defined( 'ABSPATH' ) ) {
     exit;
@@ -52,9 +52,17 @@ class PaymentTransaction
                 'item_title' => $item->get_name(),
                 'quantity' => $item->get_quantity(),
                 'unit_price' => $item->get_total() / $item->get_quantity()
-
             ];
         }
+
+        if ($this->order->get_shipping_total()) {
+            $items[] = [
+                'item_title' => 'Envio',
+                'quantity' => 1,
+                'unit_price' => $this->order->get_shipping_total()
+            ];
+        }
+
         return $items;
     }
 }
