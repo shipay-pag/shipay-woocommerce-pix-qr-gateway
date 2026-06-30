@@ -39,59 +39,38 @@ jQuery(document).ready(function($) {
     }
 
     function validarCNPJ(cnpj) {
-        cnpj = cnpj.replace(/[^\d]+/g, '');
+        cnpj = cnpj.replace(/[.\/-]/g, '').toUpperCase();
 
-        if (cnpj == '') return false;
-        if (cnpj.length != 14)
+        if (!/^[A-Z0-9]{12}\d{2}$/.test(cnpj))
             return false;
 
-        if (cnpj == "00000000000000" ||
-            cnpj == "11111111111111" ||
-            cnpj == "22222222222222" ||
-            cnpj == "33333333333333" ||
-            cnpj == "44444444444444" ||
-            cnpj == "55555555555555" ||
-            cnpj == "66666666666666" ||
-            cnpj == "77777777777777" ||
-            cnpj == "88888888888888" ||
-            cnpj == "99999999999999")
+        if (/^(\d)\1{13}$/.test(cnpj))
             return false;
 
-        var tamanho = cnpj.length - 2
-        var numeros = cnpj.substring(0, tamanho);
-        var digitos = cnpj.substring(tamanho);
-        var soma = 0;
-        var pos = tamanho - 7;
-        for (var i = tamanho; i >= 1; i--) {
-            soma += numeros.charAt(tamanho - i) * pos--;
-            if (pos < 2)
-                pos = 9;
+        function calcularDigito(base, pesos) {
+            var soma = 0;
+            for (var i = 0; i < base.length; i++) {
+                soma += (base.charCodeAt(i) - 48) * pesos[i];
+            }
+
+            var resto = soma % 11;
+            return resto < 2 ? 0 : 11 - resto;
         }
-        var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-        if (resultado != digitos.charAt(0))
+
+        var base = cnpj.substring(0, 12);
+        var primeiroDigito = calcularDigito(base, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+        if (primeiroDigito != parseInt(cnpj.charAt(12)))
             return false;
 
-        tamanho = tamanho + 1;
-        numeros = cnpj.substring(0, tamanho);
-        soma = 0;
-        pos = tamanho - 7;
-        for (var i = tamanho; i >= 1; i--) {
-            soma += numeros.charAt(tamanho - i) * pos--;
-            if (pos < 2)
-                pos = 9;
-        }
-        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-        if (resultado != digitos.charAt(1))
-            return false;
-
-        return true;
+        var segundoDigito = calcularDigito(base + primeiroDigito, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+        return segundoDigito == parseInt(cnpj.charAt(13));
     }
 
     function validarCampoCPFouCNPJ( field ) {
         var campo = $(field);
-        var valor = campo.val().replace(/\D/g, '');
+        var valor = campo.val().replace(/[.\/-]/g, '').toUpperCase();
 
-        if (valor.length <= 11) {
+        if (!/[A-Z]/.test(valor) && valor.length <= 11) {
             // Valida CPF
             if (!validarCPF(valor)) {
                 alert('CPF inválido.');
@@ -105,6 +84,20 @@ jQuery(document).ready(function($) {
             }
         }
         return true;
+    }
+
+    function aplicarMascara(field, valor) {
+        var documento = valor.replace(/[^A-Z0-9]/gi, '');
+        var mascaraCNPJ = /[A-Z]/i.test(documento) || documento.length > 11;
+
+        $(field).mask(
+            mascaraCNPJ ? 'AA.AAA.AAA/AAAA-00' : '000.000.000-00',
+            {
+                translation: {
+                    'A': {pattern: /[A-Z0-9]/i}
+                }
+            }
+        );
     }
 
     $('form.checkout, form#order_review').on('submit', function(e) {
@@ -125,9 +118,17 @@ jQuery(document).ready(function($) {
     });
 
     $(document).on('keydown', field_selectors, function (e) {
-        var digit = e.key.replace(/\D/g, '');
-        var value = $(this).val().replace(/\D/g, '');
-        var size = value.concat(digit).length;
-        $(this).mask((size <= 11) ? '000.000.000-00' : '00.000.000/0000-00');
+        var key = e.key.length === 1 ? e.key : '';
+        aplicarMascara(this, $(this).val().concat(key));
+    });
+
+    $(document).on('paste', field_selectors, function (e) {
+        var clipboard = e.originalEvent && e.originalEvent.clipboardData;
+        var value = clipboard ? clipboard.getData('text') : '';
+        aplicarMascara(this, $(this).val().concat(value));
+    });
+
+    $(document).on('input', field_selectors, function () {
+        this.value = this.value.toUpperCase();
     });
 });

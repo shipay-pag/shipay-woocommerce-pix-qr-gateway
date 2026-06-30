@@ -10,7 +10,7 @@ printf('<p class="mgn-description">%s</p>', nl2br(esc_html($checkout_instruction
 
     <div class="form-row form-row-wide">
         <label for="shipay_pix_document">CPF/CNPJ <span class="required">*</span></label>
-        <input id="shipay_pix_document" class="input-text" inputmode="numeric" name="shipay_pix_document" type="text"
+        <input id="shipay_pix_document" class="input-text" inputmode="text" name="shipay_pix_document" type="text"
                placeholder="___.___.___-__" autocomplete="off">
     </div>
 </fieldset>
