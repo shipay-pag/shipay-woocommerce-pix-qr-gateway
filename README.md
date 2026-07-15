@@ -14,6 +14,7 @@ Este plugin integra o método de pagamento Pix e Bolepix ao WooCommerce, permiti
 2. Ative o plugin no painel de administração do WordPress, na seção "Plugins".
 3. Acesse `WooCommerce > Configurações > Pagamentos` e ative o método de pagamento.
 
+
 ## Configuração Pix
 
 Após a ativação, você precisará configurar o plugin com suas credenciais da Shipay e outras opções específicas:
